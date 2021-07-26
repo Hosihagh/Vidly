@@ -41,6 +41,35 @@ app.post('/api/genres',(req,res)=> {
 
 })
 
+app.put('/api/genres/:id', (req,res)=> {
+    const genre = genres.find(g => g.id === parseInt(req.params.id));
+    if (!genre) return res.status(400).send('There exists no such genre');
+
+    const schema = Joi.object({
+        title : Joi.string().max(15).min(2).required(),
+    })
+    const validattionResults = schema.validate(req.body);
+    
+    if(validattionResults.error) return res.status(400).send(validattionResults.error.details[0].message)
+    else {
+        genre.title = req.body.title;
+        res.send(genre);
+     } 
+    
+})
+
+app.delete('/api/genres/:id',(req,res)=> {
+    const genre = genres.find(g => g.id === parseInt(req.params.id));
+    if (!genre) return res.status(400).send('There exists no such genre');
+
+    const index = genres.indexOf(genre);
+    genres.splice(index,1);
+    res.send(genre);
+})
+
+
+
 app.listen(port,()=>{
     console.log(`service running on port ${port}`);
 })
+
